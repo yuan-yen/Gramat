@@ -12,6 +12,6 @@ Up to now, the most important operations are:
 GraMat relies on the MAGMA GPU library, and you can easily find the
 instructions from : http://icl.cs.utk.edu/magma/
 
-I will further publish a detailed document for the detailed instructions.
+I will further publish a document for the detailed instructions.
 However, up to now, you can refernce the "main_example.cpp" to get a hands on.
 
