@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(matrix)
+project(GraMat)
 
 
 add_definitions(-DADD_ -DHAVE_CUBLAS)
@@ -17,8 +17,8 @@ endif (APPLE)
 
 # --- MAGMA -----------------------------------------
 set(LIBS ${LIBS} magma)
-link_directories(/local_user_foler_path/magma/lib)
-include_directories(SYSTEM /local_user_foler_path/magma/include)
+link_directories(/Users/anrris/opt/magma/lib)
+include_directories(SYSTEM /Users/anrris/opt/magma/include)
 
 
 
@@ -42,11 +42,20 @@ if (CUDA_FOUND)
 endif()
 
 
+
+
+
 # --- Execute -----------------------------------------
-include_directories(SYSTEM /local_user_folder_path/gramat/include)
+include_directories(SYSTEM /Users/anrris/Dropbox/code-gitsource/Gramat/include)
 
 add_executable(run main.cpp)
 target_link_libraries(run ${LIBS} ${EXTRA_LIBS})
+
+
+
+
+
+
 
 # -- REPORT -------------------------------------------
 message("")

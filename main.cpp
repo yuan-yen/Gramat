@@ -2,10 +2,12 @@
 using namespace std;
 
 // includes, project
+
 #include "gramat.h"
 
 // Single matrix diagonalization example
 void S_EigTest() {
+	gmt::NGPU = 2;
 	gmt::smat S(2,2),V;
 	gmt::smat E;
 

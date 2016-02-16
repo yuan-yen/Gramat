@@ -30,6 +30,7 @@ using namespace std;
 namespace gmt {
 	
 	unsigned PRINT_PRECISION=8;
+	unsigned NGPU = 1;
 	
 	#include "mat_complex.cpp"
 	
@@ -38,6 +39,13 @@ namespace gmt {
 	float gevd(unsigned int NN, cuFloatComplex	*A,	float	*w1, cuFloatComplex		*h_A, string &Status);
 	float gevd(unsigned int NN, cuDoubleComplex	*A,	double	*w1, cuDoubleComplex	*h_A, string &Status);
 	#include "mat_evd.cpp"
+	
+	float gevdm(unsigned ngpu, unsigned int NN, float			*A,	float	*w1, float				*h_A, string &Status);
+	float gevdm(unsigned ngpu, unsigned int NN, double			*A,	double	*w1, double				*h_A, string &Status);
+	float gevdm(unsigned ngpu, unsigned int NN, cuFloatComplex	*A,	float	*w1, cuFloatComplex		*h_A, string &Status);
+	float gevdm(unsigned ngpu, unsigned int NN, cuDoubleComplex	*A,	double	*w1, cuDoubleComplex	*h_A, string &Status);
+	#include "mat_evd_m.cpp"
+	
 	#include "mat_fmt.cpp"
 
 
@@ -183,7 +191,11 @@ namespace gmt {
 	
 		string Status;
 		//float time=gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		if( NGPU == 1){
+			gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		} else {
+			gevdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		}
 		return Status;
 	}
 	
@@ -195,7 +207,11 @@ namespace gmt {
 	
 		string Status;
 		//float time=gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		if( NGPU == 1){
+			gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		} else {
+			gevdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+		}
 		return Status;
 	}
 	

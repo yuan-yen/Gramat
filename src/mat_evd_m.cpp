@@ -10,7 +10,7 @@
 //-----------------------------------
 //magma_ssyevd
 //------------------------------------
-float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
+float gevdm(unsigned ngpu, unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -28,7 +28,7 @@ float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 	float  aux_work [1]; // single precision
 	magma_int_t aux_iwork[1];
 
-	magma_ssyevd(MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Single prcision query for dimension
+	magma_ssyevd_m(ngpu,MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Single prcision query for dimension
 
 	lwork = (magma_int_t) aux_work[0];
 	liwork = aux_iwork[0];
@@ -39,7 +39,7 @@ float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 
 
 	// Perform eigen-value problem
-	magma_ssyevd(MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
+	magma_ssyevd_m(ngpu,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
 
 	free(h_work);
 	magma_finalize();
@@ -56,7 +56,7 @@ float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 //-----------------------------------
 //magma_dsyevd
 //-----------------------------------
-float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
+float gevdm(unsigned ngpu, unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -73,7 +73,7 @@ float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 	double aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
 
-	magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
+	magma_dsyevd_m(ngpu, MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
 
 	lwork = (magma_int_t) aux_work[0];
 	liwork = aux_iwork[0];
@@ -84,7 +84,7 @@ float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 
 
 	// Perform eigen-value problem
-	magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
+	magma_dsyevd_m(ngpu,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
 
 	free(h_work);
 	magma_finalize();
@@ -101,7 +101,7 @@ float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 //-----------------------------------
 //magma_cheevd
 //-----------------------------------
-float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
+float gevdm(unsigned ngpu,unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -118,7 +118,7 @@ float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, st
 	cuFloatComplex aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
 
-	magma_cheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
+	magma_cheevd_m(ngpu,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
 
     lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
     lrwork = (magma_int_t) aux_rwork[0];
@@ -129,7 +129,7 @@ float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, st
 	magma_smalloc_cpu(&rwork,lrwork); //memory query
 
 	// Perform eigen-value problem
-	magma_cheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
+	magma_cheevd_m(ngpu,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
 
 	free(h_work);
 	free(rwork);
@@ -146,7 +146,7 @@ float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, st
 //-----------------------------------
 //magma_zheevd
 //-----------------------------------
-float gevd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
+float gevdm(unsigned ngpu, unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -163,7 +163,7 @@ float gevd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A,
 	cuDoubleComplex aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
 
-	magma_zheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
+	magma_zheevd_m(ngpu,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
 
 	lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
 	lrwork = (magma_int_t) aux_rwork[0];
@@ -174,7 +174,7 @@ float gevd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A,
 	magma_dmalloc_cpu(&rwork,lrwork); //memory query
 
 	// Perform eigen-value problem
-	magma_zheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
+	magma_zheevd_m(ngpu,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
 
 	free(h_work);
 	free(rwork);
