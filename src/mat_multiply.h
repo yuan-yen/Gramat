@@ -191,6 +191,16 @@ double magma_zmul(zmat & A, zmat & B, zmat & C){
 	return calc_time;
 }
 
+//template<typename T>
+//double magma_mul(matrix<var> & A, matrix<var> & B, matrix<var> & C){
+//	cout<<"Nothing to do here"<<endl;
+//}
+
+double magma_mul(smat & A, smat & B, smat & C){ return magma_smul(A,B,C); }
+double magma_mul(dmat & A, dmat & B, dmat & C){ return magma_dmul(A,B,C); }
+double magma_mul(cmat & A, cmat & B, cmat & C){ return magma_cmul(A,B,C); }
+double magma_mul(zmat & A, zmat & B, zmat & C){ return magma_zmul(A,B,C); }
+                                                             
 
 
 #endif

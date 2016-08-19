@@ -3,7 +3,7 @@ using namespace std;
 
 // includes, project
 
-#include "gramat.h"
+#include "include/gramat.h"
 
 // Single matrix diagonalization example
 void S_EigTest() {

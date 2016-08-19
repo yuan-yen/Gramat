@@ -95,7 +95,7 @@ matrix<var>& operator-(T lhs, matrix<var> & rhs){
 	matrix<var>  *ret = new matrix<var>(rhs.cols(),rhs.rows());
 	ret->set_cpy_type(PTR);
 
-	for (int i=0 ; i< rhs.cols()*rhs.rows() ; i++) ret->index(i) = lhs+rhs[i];
+	for (int i=0 ; i< rhs.cols()*rhs.rows() ; i++) ret->index(i) = lhs-rhs[i];
 
 	return *ret;
 }
@@ -114,7 +114,7 @@ matrix<var>& operator*(matrix<var> & lhs, matrix<var> & rhs){
 		for (unsigned int i=0 ; i< lhs.cols()*lhs.rows() ; i++){ ret->index(i) = lhs[i]*rhs[i]; }
 	}
 	else if	(lhs.TYPE() == MATRIX	and rhs.TYPE() == MATRIX){
-		if (lhs.cols() != rhs.rows()) err( "Matrix does not match in k-index!");
+		if (lhs.rows() != rhs.cols()) err( "Matrix does not match in k-index!");
 		magma_mul(lhs, rhs, *ret); // Call Magma_multipy function
 	}
 	else if	(lhs.TYPE() == ARRAY	and rhs.TYPE() == MATRIX)	err( "Data type does not match: lhs->Array & rhs->Matrix");
@@ -232,8 +232,8 @@ ostream & operator<< (ostream & out, matrix<var> & m){
 	
 	// Determine the max length of each component
 	int max_len=m.PrintLength();
-	for (unsigned int i=0 ; i< m.cols() ; i++)
-	for (unsigned int j=0 ; j< m.rows() ; j++){
+	for (int i=0 ; i< m.cols() ; i++)
+	for (int j=0 ; j< m.rows() ; j++){
 		string ss = tostr(m(i,j));
 		if (max_len < ss.length() )
 			max_len = ss.length();

@@ -32,21 +32,21 @@ namespace gmt {
 	unsigned PRINT_PRECISION=8;
 	unsigned NGPU = 1;
 	
-	#include "mat_complex.cpp"
+	#include "mat_complex.h"
 	
 	float gevd(unsigned int NN, float			*A,	float	*w1, float				*h_A, string &Status);
 	float gevd(unsigned int NN, double			*A,	double	*w1, double				*h_A, string &Status);
 	float gevd(unsigned int NN, cuFloatComplex	*A,	float	*w1, cuFloatComplex		*h_A, string &Status);
 	float gevd(unsigned int NN, cuDoubleComplex	*A,	double	*w1, cuDoubleComplex	*h_A, string &Status);
-	#include "mat_evd.cpp"
+	#include "mat_evd.h"
 	
 	float gevdm(unsigned ngpu, unsigned int NN, float			*A,	float	*w1, float				*h_A, string &Status);
 	float gevdm(unsigned ngpu, unsigned int NN, double			*A,	double	*w1, double				*h_A, string &Status);
 	float gevdm(unsigned ngpu, unsigned int NN, cuFloatComplex	*A,	float	*w1, cuFloatComplex		*h_A, string &Status);
 	float gevdm(unsigned ngpu, unsigned int NN, cuDoubleComplex	*A,	double	*w1, cuDoubleComplex	*h_A, string &Status);
-	#include "mat_evd_m.cpp"
+	#include "mat_evd_m.h"
 	
-	#include "mat_fmt.cpp"
+	#include "mat_fmt.h"
 
 
 	string fformat(float	val, size_t len);
@@ -96,6 +96,13 @@ namespace gmt {
 	
 		auto_ptr<Arr<var> >		mat;
 	public:
+		//matrix(): mat(new Arr<var>(1)){
+		//	mat->_cols=1; mat->_rows=1; zerolize();
+		//	print_len = 10;
+		//	print_flag=0;
+		//	_TYPE=MATRIX;
+		//	cpy_type=VAR;
+		//}
 	
 		matrix(unsigned C=1, type tp=MATRIX): mat(new Arr<var>(C*C)){
 			mat->_cols=C; mat->_rows=C; zerolize();
@@ -161,9 +168,27 @@ namespace gmt {
 		/* ---------------------------------------------
 		--- Indexing operation -------------------------
 		-----------------------------------------------*/
-		var &			operator[]	(unsigned i){if (i>=cols()*rows()) {throw "Index out of range.";} return mat->at(i); }
-	    var &			index		(unsigned i){if (i>=cols()*rows()) {throw "Index out of range.";} return mat->at(i); }
-	    var &			const_index (unsigned i) const {if (i>=cols()*rows()) {throw "Index out of range.";} return mat->at(i); }
+		var &			operator[]	(unsigned i)		{
+			if (i>=cols()*rows())	{
+				string ErrorStr = "Error, index out of range of matrix element";
+				throw ErrorStr;
+			}
+		return mat->at(i);
+		}
+	    var &			index		(unsigned i)		{
+			if (i>=cols()*rows())			{
+				string ErrorStr = "Error, index out of range of matrix element";
+				throw ErrorStr;
+			}
+		return mat->at(i);
+		}
+	    var &			const_index (unsigned i) const	{
+			if (i>=cols()*rows())	{
+				string ErrorStr = "Error, index out of range of matrix element";
+				throw ErrorStr;
+			}
+			return mat->at(i);
+		}
 	
 		var &			operator()	(unsigned i, unsigned j){return at(i,j);}
 		var &			at			(unsigned , unsigned );
@@ -215,9 +240,9 @@ namespace gmt {
 		return Status;
 	}
 	
-	#include "mat_multiply.cpp"
-	#include "mat_function.cpp"
-	#include "mat_operator.cpp"
+	#include "mat_multiply.h"
+	#include "mat_function.h"
+	#include "mat_operator.h"
 
 
 	
