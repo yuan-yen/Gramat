@@ -5,7 +5,7 @@ using namespace std;
 
 // includes, project
 
-#include "include/gramat.h"
+#include "gramat.h"
 
 
 // Single matrix diagonalization example
