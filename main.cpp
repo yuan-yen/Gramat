@@ -1,9 +1,12 @@
 #include <iostream>
+#include <vector>
+#include <unistd.h>
 using namespace std;
 
 // includes, project
 
 #include "include/gramat.h"
+
 
 // Single matrix diagonalization example
 void S_EigTest() {
@@ -21,6 +24,9 @@ void S_EigTest() {
 	cout<<S<<endl;
 	cout<<E<<endl;
 	cout<<V<<endl;
+
+	auto D = S*V;
+	cout<<D<<endl;
 }
 
 // Double matrix diagonalization example
@@ -57,16 +63,20 @@ void C_EigTest() {
 
 // Double complex matrix diagonalization example
 void Z_EigTest() {
-	gmt::zmat S(2,2),V;
+	gmt::zmat S(100,100),V;
 	gmt::dmat E;
-	S(0,0) = 1;
-	S(1,0) = 2+gmt::Im;
-	S(0,1) = 2-gmt::Im;
-	S(1,1) = 1;
+	//S(0,0) = 1;
+	//S(1,0) = 2+gmt::Im;
+	//S(0,1) = 2-gmt::Im;
+	//S(1,1) = 1;
+	for( double i=0 ; i<S.cols() ; i++)
+	for( double j=0 ; j<S.cols() ; j++){
+		S(i,j) = gmt::Im*(i-j)/(i+j+1);
+	}
 
 	cout<<S.evd(E,V)<<endl;
 
-	cout<<S<<endl;
+	//cout<<S<<endl;
 	cout<<E<<endl;
 	cout<<V<<endl;
 }
@@ -175,15 +185,15 @@ void magmaZmul() {
 	cout<<C<<endl;
 }
 
+
 int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
 	
-
-	S_EigTest();
+	//S_EigTest();
 	//D_EigTest();
 	//C_EigTest();
-	//Z_EigTest();
+	Z_EigTest();
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();
