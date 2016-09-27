@@ -2,6 +2,6 @@
 #define __MATRIX_HEADER_FILE___
 
 
-#include "../src/mat.h"
+#include "../src/header.h"
 
 #endif

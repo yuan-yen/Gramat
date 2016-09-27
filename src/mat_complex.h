@@ -145,7 +145,13 @@ istream & operator>> (istream & in , cvar & m){
 // Define a pure imaginary variable for convenient operations
 const zvar Im(0,1);
 
-	
+
+
+///* ------------------------------------------------------- */
+///* -Functional operations of Array like Matrix------------ */
+///* ------------------------------------------------------- */
+cvar conj(cvar c){ return cvar(c.real(),-c.imag()); }
+zvar conj(zvar c){ return zvar(c.real(),-c.imag()); }
 	
 
 	

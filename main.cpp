@@ -25,7 +25,8 @@ void S_EigTest() {
 	cout<<E<<endl;
 	cout<<V<<endl;
 
-	auto D = S*V;
+	gmt::smat D;
+	D= S*V;
 	cout<<D<<endl;
 }
 
@@ -63,7 +64,7 @@ void C_EigTest() {
 
 // Double complex matrix diagonalization example
 void Z_EigTest() {
-	gmt::zmat S(100,100),V;
+	gmt::zmat S(10,10),V;
 	gmt::dmat E;
 	//S(0,0) = 1;
 	//S(1,0) = 2+gmt::Im;
@@ -101,7 +102,6 @@ void magmaSmul() {
 
 
 	cout<<magma_smul(A,B,C)<<endl;
-
 	cout<<A<<endl;
 	cout<<B<<endl;
 	cout<<C<<endl;
@@ -190,10 +190,24 @@ int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
 	
+	unsigned N = 3;
+	gmt::dmat A(1,N), B(1,N), C(1,N);
+	B(0,0) = 1;
+	B(0,1) = 1;
+	B(0,2) = 1;
+	A(0,0) = 1;
+	A(0,1) = 1;
+	A(0,2) = 1;
+	
+	for( unsigned i =0 ; i<1000 ; i++){
+		C = B+B+B;
+		cout<<i<<" "<<C<<endl;
+	}
+	
 	//S_EigTest();
 	//D_EigTest();
 	//C_EigTest();
-	Z_EigTest();
+	//Z_EigTest();
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();
