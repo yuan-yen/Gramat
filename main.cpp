@@ -7,7 +7,6 @@ using namespace std;
 
 #include "gramat.h"
 
-
 // Single matrix diagonalization example
 void S_EigTest() {
 	gmt::NGPU = 2;
@@ -66,14 +65,10 @@ void C_EigTest() {
 void Z_EigTest() {
 	gmt::zmat S(10,10),V;
 	gmt::dmat E;
-	//S(0,0) = 1;
-	//S(1,0) = 2+gmt::Im;
-	//S(0,1) = 2-gmt::Im;
-	//S(1,1) = 1;
-	for( double i=0 ; i<S.cols() ; i++)
-	for( double j=0 ; j<S.cols() ; j++){
-		S(i,j) = gmt::Im*(i-j)/(i+j+1);
-	}
+	S(0,0) = 1;
+	S(1,0) = 2+gmt::Im;
+	S(0,1) = 2-gmt::Im;
+	S(1,1) = 1;
 
 	cout<<S.evd(E,V)<<endl;
 
@@ -185,24 +180,13 @@ void magmaZmul() {
 	cout<<C<<endl;
 }
 
+#define max(a,b) (((a)<(b))?(b):(a))
 
 int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
+
 	
-	unsigned N = 3;
-	gmt::dmat A(1,N), B(1,N), C(1,N);
-	B(0,0) = 1;
-	B(0,1) = 1;
-	B(0,2) = 1;
-	A(0,0) = 1;
-	A(0,1) = 1;
-	A(0,2) = 1;
-	
-	for( unsigned i =0 ; i<1000 ; i++){
-		C = B+B+B;
-		cout<<i<<" "<<C<<endl;
-	}
 	
 	//S_EigTest();
 	//D_EigTest();
@@ -212,6 +196,7 @@ int main(int argc, char **argv){
 	//magmaDmul();
 	//magmaCmul();
 	//magmaZmul();
+
 	
 	return 0;
 }

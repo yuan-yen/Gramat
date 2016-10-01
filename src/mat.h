@@ -45,7 +45,7 @@ public:
 	/* ---------------------------------------------
 	--- Copy operators -----------------------------
 	-----------------------------------------------*/
-	matrix &		operator=(matrix rhs) {
+	matrix &			operator=(matrix rhs) {
 		
 		{	//// Copy the entire data base to another instance.
 	
@@ -59,7 +59,7 @@ public:
 		}
 		return *this;
 	}
-	matrix<var> &		operator=(auto_ptr<Arr<var> > rhs){
+	matrix &			operator=(auto_ptr<Arr<var> > rhs){
 		set_col(rhs->_cols);
 		set_row(rhs->_rows);
 		mat = rhs;
@@ -79,7 +79,7 @@ public:
 	--- Pointer operation for data transfer. -------
 	-----------------------------------------------*/
 	var *				get_ptr		(){return mat->get_ptr();}
-	auto_ptr<Arr<var> > get     (){return mat;}
+	auto_ptr<Arr<var> > get			(){return mat;}
 
 	/* ---------------------------------------------
 	--- Indexing operation -------------------------
@@ -142,11 +142,10 @@ public:
 		V = matrix(cols(),cols()).get();
 	
 		string Status;
-		//float time=gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		if( NGPU == 1){
-			gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+			magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		} else {
-			gevdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+			magma_evdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		}
 		return Status;
 	}
@@ -156,12 +155,67 @@ public:
 		V = matrix(cols(),cols()).get();
 	
 		string Status;
-		//float time=gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		if( NGPU == 1){
-			gevd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+			magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		} else {
-			gevdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
+			magma_evdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		}
+		return Status;
+	}
+	string				gevd(cmat & E, smat & VL) {
+		if (cols() != rows()) throw "Object is not a square matrix!";
+		E	= cmat(1,cols()).get();
+		smat A = *this;
+		smat WR(1,cols());
+		smat WI(1,cols());
+		VL	= matrix(cols(),cols());
+	
+		string Status;
+		magma_gevd(cols(), A.get_ptr(), WR.get_ptr(), WI.get_ptr(), VL.get_ptr(), Status);
+		
+		for(unsigned i=0 ; i<E.size() ; i++){
+			E[i] = WR[i] + Im*WI[i];
+		}
+		
+		return Status;
+	}
+	string				gevd(zmat & E, dmat & VL) {
+		if (cols() != rows()) throw "Object is not a square matrix!";
+		E	= zmat(1,cols()).get();
+		dmat A = *this;
+		dmat WR(1,cols());
+		dmat WI(1,cols());
+		VL	= dmat(cols(),cols());
+	
+		string Status;
+		magma_gevd(cols(), A.get_ptr(), WR.get_ptr(), WI.get_ptr(), VL.get_ptr(), Status);
+		
+		for(unsigned i=0 ; i<E.size() ; i++){
+			E[i] = WR[i] + Im*WI[i];
+		}
+		
+		return Status;
+	}
+	string				gevd(cmat & E, cmat & VL) {
+		if (cols() != rows()) throw "Object is not a square matrix!";
+		E	= cmat(1,cols()).get();
+		cmat A = *this;
+		VL	= cmat(cols(),cols());
+	
+		string Status;
+		magma_gevd(cols(), A.get_ptr(), E.get_ptr(), VL.get_ptr(), Status);
+		
+		return Status;
+	}
+	string				gevd(zmat & E, zmat & VL) {
+		if (cols() != rows()) throw "Object is not a square matrix!";
+		E	= zmat(1,cols()).get();
+		zmat A = *this;
+		VL	= zmat(cols(),cols());
+	
+		string Status;
+		cout<<magma_gevd(cols(), A.get_ptr(), E.get_ptr(), VL.get_ptr(), Status)<<endl;
+		
 		return Status;
 	}
 
@@ -460,7 +514,7 @@ template<class var, class T>	matrix<var> operator-(T lhs,matrix<var> & rhs)				{
 /* -------------------------------------------------------
 -- Multiply operation ------------------------------------
 ---------------------------------------------------------*/
-template<class var>				matrix<var> operator*(matrix<var> & lhs, matrix<var> & rhs){
+template<class var>				matrix<var> operator*(matrix<var> & lhs, matrix<var> & rhs)	{
 
 	matrix<var>  ret(lhs.cols(),rhs.rows() );
 
@@ -489,17 +543,6 @@ template<class var, class T>	matrix<var> operator*(T lhs,matrix<var> & rhs)				{
 	for (int i=0 ; i< rhs.cols()*rhs.rows() ; i++) ret.index(i) = lhs*rhs[i];
 	return ret;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 //--------------------------------------------------------------
 //---Calculate the abs of the complex variable
@@ -545,8 +588,6 @@ zvar							exp(zvar val){
 	vv=exp(vv);
 	return zvar(vv.real(), vv.imag());
 }
-
-
 
 ///* ------------------------------------------------------- */
 ///* -Output of the matrix---------------------------------- */

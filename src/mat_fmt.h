@@ -2,30 +2,30 @@
 /* -Output format of the matrix--------------------------- */
 /* ------------------------------------------------------- */
 
-string tostr(unsigned val){
+string tostr(unsigned	val){
 	ostringstream oss;
 	oss.precision(PRINT_PRECISION);
 	oss<<val;
 	return oss.str();
 }
-string tostr(float val){
+string tostr(float		val){
 	ostringstream oss;
 	oss.precision(PRINT_PRECISION);
 	oss<<val;
 	return oss.str();
 }
-string tostr(double val){
+string tostr(double		val){
 	ostringstream oss;
 	oss.precision(PRINT_PRECISION);
 	oss<<val;
 	return oss.str();
 }
-string tostr(cvar val){
+string tostr(cvar		val){
 	ostringstream oss;
 	oss<<val.tostr();
 	return oss.str();
 }
-string tostr(zvar val){
+string tostr(zvar		val){
 	ostringstream oss;
 	oss<<val.tostr();
 	return oss.str();
@@ -33,9 +33,7 @@ string tostr(zvar val){
 /* ------------------------------------------------------- */
 /* ------------------------------------------------------- */
 
-
-
-string fformat(unsigned val,size_t len=10){
+string fformat(unsigned	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
 	ss << val;
 	string str;
@@ -47,7 +45,7 @@ string fformat(unsigned val,size_t len=10){
 	return str;
 }
 /* ------------------------------------------------------- */
-string fformat(float val,size_t len=10){
+string fformat(float	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
 	ss << val;
 	string str;
@@ -62,7 +60,7 @@ string fformat(float val,size_t len=10){
 	return str;
 }
 /* ------------------------------------------------------- */
-string fformat(double val,size_t len=10){
+string fformat(double	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
 	ss << val;
 	string str;
@@ -77,7 +75,7 @@ string fformat(double val,size_t len=10){
 	return str;
 }
 /* ------------------------------------------------------- */
-string fformat(cvar val,size_t len=10){
+string fformat(cvar		val,size_t len=10){
 	
 	string str = val.tostr();
 	while(str.size() < len)
@@ -86,7 +84,7 @@ string fformat(cvar val,size_t len=10){
 	return str;
 }
 /* ------------------------------------------------------- */
-string fformat(zvar val,size_t len=10){
+string fformat(zvar		val,size_t len=10){
 	
 	string str = val.tostr();
 	while(str.size() < len)
@@ -95,7 +93,7 @@ string fformat(zvar val,size_t len=10){
 	return str;
 }
 /* ------------------------------------------------------- */
-string fformat(string val,size_t len=10){
+string fformat(string	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
 	ss << val;
 	string str;

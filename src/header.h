@@ -65,7 +65,7 @@ namespace gmt {
 	#include "mat_magma_functions.h"
 	
 	enum type{MATRIX, ARRAY};
-	enum CPY_TYPE{VAR,PTR};
+	//enum CPY_TYPE{VAR,PTR};
 	
 	#include "mat.h"
 	

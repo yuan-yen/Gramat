@@ -12,7 +12,7 @@
 //-----------------------------------
 //magma_ssyevd
 //------------------------------------
-float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
+float magma_evd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -58,7 +58,7 @@ float gevd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 //-----------------------------------
 //magma_dsyevd
 //-----------------------------------
-float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
+float magma_evd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -103,7 +103,7 @@ float gevd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 //-----------------------------------
 //magma_cheevd
 //-----------------------------------
-float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
+float magma_evd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -148,7 +148,7 @@ float gevd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, st
 //-----------------------------------
 //magma_zheevd
 //-----------------------------------
-float gevd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
+float magma_evd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -191,13 +191,11 @@ float gevd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A,
 }
 
 
-
-
 // Multiple GPU operations
 //-----------------------------------
 //magma_ssyevd
 //------------------------------------
-float gevdm(unsigned ngpu, unsigned int N, float *A, float *w1, float *h_A, string &Status) {
+float magma_evdm(unsigned ngpu, unsigned int N, float *A, float *w1, float *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -243,7 +241,7 @@ float gevdm(unsigned ngpu, unsigned int N, float *A, float *w1, float *h_A, stri
 //-----------------------------------
 //magma_dsyevd
 //-----------------------------------
-float gevdm(unsigned ngpu, unsigned int N, double *A, double *w1, double *h_A, string &Status) {
+float magma_evdm(unsigned ngpu, unsigned int N, double *A, double *w1, double *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -288,7 +286,7 @@ float gevdm(unsigned ngpu, unsigned int N, double *A, double *w1, double *h_A, s
 //-----------------------------------
 //magma_cheevd
 //-----------------------------------
-float gevdm(unsigned ngpu,unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
+float magma_evdm(unsigned ngpu,unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -333,7 +331,7 @@ float gevdm(unsigned ngpu,unsigned int N, cuFloatComplex *A, float *w1, cuFloatC
 //-----------------------------------
 //magma_zheevd
 //-----------------------------------
-float gevdm(unsigned ngpu, unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
+float magma_evdm(unsigned ngpu, unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -374,4 +372,158 @@ float gevdm(unsigned ngpu, unsigned int N, cuDoubleComplex *A, double *w1, cuDou
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
 }
+
+
+/*********************************************************************/
+
+
+//-----------------------------------
+//magma_sgeev
+//-----------------------------------
+float magma_gevd(unsigned int N, float *A, float *wr, float *wi, float *VR, string &Status)	{
+	
+	// Start counting the calculation time
+	real_Double_t calc_time = magma_wtime();
+	
+	magma_init ();
+	magma_int_t n=N, n2=n*n;
+	float *VL;
+	
+	magma_int_t info, nb;
+	float *h_work;
+	magma_int_t lwork;
+	nb = magma_get_sgehrd_nb(n);
+	lwork = n*(2+nb);
+	lwork = max(lwork, n*(5+2*n));
+	
+	magma_smalloc_cpu(&VL,n2);
+	magma_smalloc_cpu(&h_work, lwork);
+	
+	magma_sgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
+	
+	free(VL);
+	free(h_work);
+	magma_finalize();
+	
+	//// End counting the calculation time
+	calc_time = magma_wtime() - calc_time;
+	
+	return calc_time;
+}
+
+//-----------------------------------
+//magma_dgeev
+//-----------------------------------
+float magma_gevd(unsigned int N, double *A, double *wr, double *wi, double *VR, string &Status)	{
+	
+	// Start counting the calculation time
+	real_Double_t calc_time = magma_wtime();
+	
+	magma_init ();
+	magma_int_t n=N, n2=n*n;
+	double *VL;
+	
+	magma_int_t info, nb;
+	double *h_work;
+	magma_int_t lwork;
+	nb = magma_get_sgehrd_nb(n);
+	lwork = n*(2+nb);
+	lwork = max(lwork, n*(5+2*n));
+	
+	magma_dmalloc_cpu(&VL,n2);
+	magma_dmalloc_cpu(&h_work, lwork);
+	
+	magma_dgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
+	
+	free(VL);
+	free(h_work);
+	magma_finalize();
+	
+	//// End counting the calculation time
+	calc_time = magma_wtime() - calc_time;
+	
+	return calc_time;
+}
+
+//-----------------------------------
+//magma_cgeev
+//-----------------------------------
+float magma_gevd(unsigned int N, cuFloatComplex *A, cuFloatComplex *w, cuFloatComplex *VR, string &Status)	{
+	
+	// Start counting the calculation time
+	real_Double_t calc_time = magma_wtime();
+	
+	magma_init ();
+	magma_int_t n=N, n2=n*n;
+	cuFloatComplex *VL;
+	
+	magma_int_t info, nb;
+	cuFloatComplex *h_work;
+	magma_int_t lwork;
+	nb = magma_get_sgehrd_nb(n);
+	lwork = n*(2+nb);
+	lwork = max(lwork, n*(5+2*n));
+	float *rwork;
+	
+	magma_cmalloc_cpu(&VL,n2);
+	magma_cmalloc_cpu(&h_work, lwork);
+	magma_smalloc_cpu(&rwork,n2);
+	
+	magma_cgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
+	
+	free(VL);
+	free(h_work);
+	free(rwork);
+	magma_finalize();
+	
+	//// End counting the calculation time
+	calc_time = magma_wtime() - calc_time;
+	
+	return calc_time;
+}
+
+//-----------------------------------
+//magma_zgeev
+//-----------------------------------
+float magma_gevd(unsigned int N, cuDoubleComplex *A, cuDoubleComplex *w, cuDoubleComplex *VR, string &Status)	{
+	
+	// Start counting the calculation time
+	real_Double_t calc_time = magma_wtime();
+	
+	magma_init ();
+	magma_int_t n=N, n2=n*n;
+	cuDoubleComplex *VL;
+	
+	magma_int_t info, nb;
+	cuDoubleComplex *h_work;
+	magma_int_t lwork;
+	nb = magma_get_sgehrd_nb(n);
+	lwork = n*(2+nb);
+	lwork = max(lwork, n*(5+2*n));
+	double *rwork;
+	
+	magma_zmalloc_cpu(&VL,n2);
+	magma_zmalloc_cpu(&h_work, lwork);
+	magma_dmalloc_cpu(&rwork,n2);
+	
+	magma_zgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
+	
+	free(VL);
+	free(h_work);
+	free(rwork);
+	magma_finalize();
+	
+	//// End counting the calculation time
+	calc_time = magma_wtime() - calc_time;
+	
+	return calc_time;
+}
+
+
+
+
+
+
+
+
 
