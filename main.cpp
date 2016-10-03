@@ -7,6 +7,7 @@ using namespace std;
 
 #include "gramat.h"
 
+
 // Single matrix diagonalization example
 void S_EigTest() {
 	gmt::NGPU = 2;
@@ -182,7 +183,7 @@ int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
 
-	gmt::SOLVER = gmt::CPU;
+	//gmt::SOLVER = gmt::CPU;
 	//gmt::SOLVER = gmt::GPU;
 	
 	//S_EigTest();

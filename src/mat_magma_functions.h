@@ -200,68 +200,41 @@ double	magma_evd(unsigned N, float *A, float *w1, float *h_A, string &Status)			
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
 
+
+	magma_init ();
 	magma_int_t n=N;
 	float  *h_work;	// single precision
 	magma_int_t lwork = -1, *iwork, liwork = -1, info;
 
 
 	lapackf77_slacpy( MagmaUpperLowerStr, &n, &n, A, &n, h_A, &n ); // single precision, copy A->h_A
-	
-	
+
+	// Query for workspace sizes
 	float  aux_work [1]; // single precision
 	magma_int_t aux_iwork[1];
-	
-	switch(SOLVER){
-		case CPU:
-			// Query for workspace sizes
 
-			lapackf77_ssyevd("V","L"            ,&n,h_A,&n,w1,aux_work ,&lwork, aux_iwork ,&liwork,&info ); //Single prcision query for dimension
+	magma_ssyevd    (MagmaVec,MagmaLower, n,h_A,n,w1,aux_work , -1   , aux_iwork ,-1    ,&info ); //Single prcision query for dimension
+	//lapackf77_ssyevd("V","L"            ,&n,h_A,&n,w1,aux_work ,&lwork, aux_iwork ,&liwork,&info ); //Single prcision query for dimension
+	//magma_ssyevd_m(1,MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Single prcision query for dimension
 
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_smalloc_cpu(&h_work,lwork); //memory query
-			
-			lapackf77_ssyevd("V", "L"           , &n, h_A, &n, w1, h_work,&lwork, iwork,&liwork,&info); // Perform eigen-value problem
-			break;
-		case GPU:
-			magma_init ();
-			// Query for workspace sizes
-			magma_ssyevd    (MagmaVec,MagmaLower, n,h_A,n,w1,aux_work , -1   , aux_iwork ,-1    ,&info ); //Single prcision query for dimension
+	lwork = (magma_int_t) aux_work[0];
+	liwork = aux_iwork[0];
 
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_smalloc_cpu(&h_work,lwork); //memory query
+	iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
+	magma_smalloc_cpu(&h_work,lwork); //memory query
 
-			// Perform eigen-value problem
-			magma_ssyevd    (MagmaVec,MagmaLower,  n, h_A,  n, w1, h_work, lwork, iwork, liwork,&info);
+	// Perform eigen-value problem
+	magma_ssyevd    (MagmaVec,MagmaLower,  n, h_A,  n, w1, h_work, lwork, iwork, liwork,&info);
+	//lapackf77_ssyevd("V", "L"           , &n, h_A, &n, w1, h_work,&lwork, iwork,&liwork,&info);
+	//magma_ssyevd_m(1,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
 
-			magma_finalize();
-			break;
-		case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_init ();
-			// Query for workspace sizes
-			magma_ssyevd_m(SOLVER,MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Single prcision query for dimension
-
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_smalloc_cpu(&h_work,lwork); //memory query
-
-			// Perform eigen-value problem
-			magma_ssyevd_m(SOLVER,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
-
-			magma_finalize();
-			break;
-	}
-	
 	free(h_work);
+
 
 	if (info != 0)  Status=magma_strerror( info );
 	else			Status="Success";
 
+	magma_finalize();
 	// End counting the calculation time
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
@@ -274,6 +247,7 @@ double	magma_evd(unsigned N, double *A, double *w1, double *h_A, string &Status)
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
 
+	magma_init ();
 	magma_int_t n=N;
 	double *h_work;	// double precision
 	magma_int_t lwork = -1, *iwork, liwork = -1, info;
@@ -285,53 +259,28 @@ double	magma_evd(unsigned N, double *A, double *w1, double *h_A, string &Status)
 	double aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
 
-	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_dsyevd("V","L"            ,&n,h_A,&n,w1,aux_work ,&lwork, aux_iwork ,&liwork,&info ); //Single prcision query for dimension
+	magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
+	//lapackf77_dsyevd("V","L"            ,&n,h_A,&n,w1,aux_work ,&lwork, aux_iwork ,&liwork,&info ); //Single prcision query for dimension
+	//magma_dsyevd_m(1, MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
 
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_dmalloc_cpu(&h_work,lwork); //memory query
+	lwork = (magma_int_t) aux_work[0];
+	liwork = aux_iwork[0];
 
-			lapackf77_dsyevd("V", "L"           , &n, h_A, &n, w1, h_work,&lwork, iwork,&liwork,&info); // Perform eigen-value problem
-			break;
-		case GPU:
-			magma_init ();
-			magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
+	iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
+	magma_dmalloc_cpu(&h_work,lwork); //memory query
 
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_dmalloc_cpu(&h_work,lwork); //memory query
+	// Perform eigen-value problem
+	magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
+	//lapackf77_dsyevd("V", "L"           , &n, h_A, &n, w1, h_work,&lwork, iwork,&liwork,&info);
+	//magma_dsyevd_m(1,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
 
-			// Perform eigen-value problem
-			magma_dsyevd(MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
-
-			magma_finalize();
-		case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_init ();
-			magma_dsyevd_m(SOLVER, MagmaVec,MagmaLower,n,h_A,n,w1,aux_work ,-1, aux_iwork ,-1,&info ); //Double prcision query for dimension
-
-			lwork = (magma_int_t) aux_work[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_dmalloc_cpu(&h_work,lwork); //memory query
-
-			// Perform eigen-value problem
-			magma_dsyevd_m(SOLVER,MagmaVec,MagmaLower,n,h_A,n,w1,h_work,lwork, iwork,liwork,&info);
-
-			magma_finalize();
-			break;
-	}
-	
 	free(h_work);
-	
+
+
 	if (info != 0)  Status=magma_strerror( info );
 	else			Status="Success";
 
+	magma_finalize();
 	// End counting the calculation time
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
@@ -344,6 +293,7 @@ double	magma_evd(unsigned N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
 
+	magma_init ();
 	magma_int_t n=N;
 	cuFloatComplex *h_work;	// single complex precision
 	magma_int_t lwork = -1, *iwork, liwork = -1, lrwork = -1, info;
@@ -355,63 +305,30 @@ double	magma_evd(unsigned N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, 
 	cuFloatComplex aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
 
-	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_cheevd("N", "L", &n, h_A, &n, w1, aux_work, &lwork, aux_rwork, &lrwork, aux_iwork, &liwork, &info);
+	magma_cheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
+	//lapackf77_cheevd("N", "L", &n, h_A, &n, w1, aux_work, &lwork, aux_rwork, &lrwork, aux_iwork, &liwork, &info);
+	//magma_cheevd_m(1,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
 
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_cmalloc_cpu(&h_work,lwork); //memory query
-			magma_smalloc_cpu(&rwork,lrwork); //memory query
+    lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
+    lrwork = (magma_int_t) aux_rwork[0];
+    liwork = aux_iwork[0];
 
-			lapackf77_cheevd( "N", "L", &n, h_A, &n, w1, h_work, &lwork, rwork, &lrwork, iwork, &liwork, &info ); // Perform eigen-value problem
+	iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
+	magma_cmalloc_cpu(&h_work,lwork); //memory query
+	magma_smalloc_cpu(&rwork,lrwork); //memory query
 
-			break;
-		case GPU:
-			magma_init ();
-			magma_cheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
-			
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_cmalloc_cpu(&h_work,lwork); //memory query
-			magma_smalloc_cpu(&rwork,lrwork); //memory query
-			
-			magma_cheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info ); // Perform eigen-value problem
-			
-			magma_finalize();
-			break;
-		case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_init ();
-			magma_cheevd_m(SOLVER,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
-			
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_cmalloc_cpu(&h_work,lwork); //memory query
-			magma_smalloc_cpu(&rwork,lrwork); //memory query
-			
-			// Perform eigen-value problem
-			magma_cheevd_m(SOLVER,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
-			
-			magma_finalize();
-			break;
-	}
-	
+	// Perform eigen-value problem
+	magma_cheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
+	//lapackf77_cheevd( "N", "L", &n, h_A, &n, w1, h_work, &lwork, rwork, &lrwork, iwork, &liwork, &info );
+	//magma_cheevd_m(1,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
 
 	free(h_work);
 	free(rwork);
-	
+
 	if (info != 0)  Status=magma_strerror( info );
 	else			Status="Success";
 
+	magma_finalize();
 	//// End counting the calculation time
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
@@ -424,6 +341,7 @@ double	magma_evd(unsigned N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
 
+	magma_init ();
 	magma_int_t n=N;
 	cuDoubleComplex *h_work;	// single complex precision
 	magma_int_t lwork = -1, *iwork, liwork = -1, lrwork = -1, info;
@@ -434,54 +352,23 @@ double	magma_evd(unsigned N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_
 	// Query for workspace sizes
 	cuDoubleComplex aux_work [1]; // double precision
 	magma_int_t aux_iwork[1];
-	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_zheevd("N", "L", &n, h_A, &n, w1, aux_work, &lwork, aux_rwork, &lrwork, aux_iwork, &liwork, &info);
-			
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_zmalloc_cpu(&h_work,lwork); //memory query
-			magma_dmalloc_cpu(&rwork,lrwork); //memory query
-			
-			// Perform eigen-value problem
-			lapackf77_zheevd( "N", "L", &n, h_A, &n, w1, h_work, &lwork, rwork, &lrwork, iwork, &liwork, &info );
-			
-			magma_finalize();
-			break;
-		case GPU: case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-			magma_init ();
-			magma_zheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
-			
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_zmalloc_cpu(&h_work,lwork); //memory query
-			magma_dmalloc_cpu(&rwork,lrwork); //memory query
-			
-			magma_zheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info ); // Perform eigen-value problem
-			
-			magma_finalize();
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_init ();
-			magma_zheevd_m(1,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
-			
-			lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
-			lrwork = (magma_int_t) aux_rwork[0];
-			liwork = aux_iwork[0];
-			iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
-			magma_zmalloc_cpu(&h_work,lwork); //memory query
-			magma_dmalloc_cpu(&rwork,lrwork); //memory query
-			
-			magma_zheevd_m(1,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info ); // Perform eigen-value problem
-			
-			magma_finalize();
-			break;
-	}
 
+	magma_zheevd(MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
+	//lapackf77_zheevd("N", "L", &n, h_A, &n, w1, aux_work, &lwork, aux_rwork, &lrwork, aux_iwork, &liwork, &info);
+	//magma_zheevd_m(1,MagmaVec, MagmaLower, n,h_A,n,w1	,aux_work ,-1 ,aux_rwork,-1 ,aux_iwork,-1 ,&info ); //single complex prcision query for dimension
+
+	lwork  = (magma_int_t) MAGMA_C_REAL( aux_work[0] );
+	lrwork = (magma_int_t) aux_rwork[0];
+	liwork = aux_iwork[0];
+
+	iwork=(magma_int_t*)malloc(liwork*sizeof(magma_int_t));
+	magma_zmalloc_cpu(&h_work,lwork); //memory query
+	magma_dmalloc_cpu(&rwork,lrwork); //memory query
+
+	// Perform eigen-value problem
+	magma_zheevd( MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
+	//lapackf77_zheevd( "N", "L", &n, h_A, &n, w1, h_work, &lwork, rwork, &lrwork, iwork, &liwork, &info );
+	//magma_zheevd_m(1,MagmaVec, MagmaLower, n, h_A, n, w1, h_work, lwork, rwork, lrwork, iwork, liwork, &info );
 
 	free(h_work);
 	free(rwork);
@@ -489,6 +376,7 @@ double	magma_evd(unsigned N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_
 	if (info != 0)  Status=magma_strerror( info );
 	else			Status="Success";
 
+	magma_finalize();
 	//// End counting the calculation time
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
@@ -518,16 +406,9 @@ double	magma_gevd(unsigned N, float *A, float *wr, float *wi, float *VR, string 
 	magma_smalloc_cpu(&VL,n2);
 	magma_smalloc_cpu(&h_work, lwork);
 	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_sgeev("N", "V", &n, A, &n, wr, wi, VL, &n, VR, &n, h_work, &lwork, &info);
-			break;
-		case GPU: case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_sgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
-			//magma_sgeev_m(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
-			break;
-	}
+	magma_sgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
+	//lapackf77_sgeev("N", "V", &n, A, &n, wr, wi, VL, &n, VR, &n, h_work, &lwork, &info);
+	//magma_sgeev_m(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
 	
 	free(VL);
 	free(h_work);
@@ -560,17 +441,9 @@ double	magma_gevd(unsigned N, double *A, double *wr, double *wi, double *VR, str
 	magma_dmalloc_cpu(&VL,n2);
 	magma_dmalloc_cpu(&h_work, lwork);
 	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_dgeev("N", "V", &n, A, &n, wr, wi, VL, &n, VR, &n, h_work, &lwork, &info);
-			break;
-		case GPU: case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_dgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
-			//magma_dgeev_m(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
-			break;
-	}
-	
+	magma_dgeev(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
+	//lapackf77_dgeev("N", "V", &n, A, &n, wr, wi, VL, &n, VR, &n, h_work, &lwork, &info);
+	//magma_dgeev_m(MagmaNoVec, MagmaVec, n, A, n, wr, wi, VL, n, VR, n, h_work, lwork, &info);
 	
 	free(VL);
 	free(h_work);
@@ -605,16 +478,9 @@ double	magma_gevd(unsigned N, cuFloatComplex *A, cuFloatComplex *w, cuFloatCompl
 	magma_cmalloc_cpu(&h_work, lwork);
 	magma_smalloc_cpu(&rwork,n2);
 	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_cgeev("N", "V", &n, A, &n, w, VL, &n, VR, &n, h_work, &lwork, rwork, &info);
-			break;
-		case GPU: case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_cgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
-			//magma_cgeev_m(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
-			break;
-	}
+	magma_cgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
+	//lapackf77_cgeev("N", "V", &n, A, &n, w, VL, &n, VR, &n, h_work, &lwork, rwork, &info);
+	//magma_cgeev_m(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
 	
 	
 	
@@ -652,18 +518,9 @@ double	magma_gevd(unsigned N, cuDoubleComplex *A, cuDoubleComplex *w, cuDoubleCo
 	magma_zmalloc_cpu(&h_work, lwork);
 	magma_dmalloc_cpu(&rwork,n2);
 	
-	switch(SOLVER){
-		case CPU:
-			lapackf77_zgeev("N", "V", &n, A, &n, w, VL, &n, VR, &n, h_work, &lwork, rwork, &info);
-			break;
-		case GPU:
-		case GPUx2: case GPUx3: case GPUx4: case GPUx5:
-		case GPUx6: case GPUx7: case GPUx8: case GPUx9: case GPUx10:
-			magma_zgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
-			//magma_zgeev_m(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
-			break;
-	}
-	
+	magma_zgeev(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
+	//lapackf77_zgeev("N", "V", &n, A, &n, w, VL, &n, VR, &n, h_work, &lwork, rwork, &info);
+	//magma_zgeev_m(MagmaNoVec, MagmaVec,n , A, n, w, VL, n, VR, n, h_work, lwork, rwork, &info);
 	
 	free(VL);
 	free(h_work);
