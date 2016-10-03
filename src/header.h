@@ -22,7 +22,7 @@
 #include <cublas_v2.h>
 #include "magma.h"
 #include "magma_lapack.h"
-#include "magma_clapack.h"
+//#include "magma_clapack.h"
 
 namespace gmt {
 	
@@ -86,18 +86,18 @@ namespace gmt {
 	enum type{MATRIX, ARRAY};
 	
 	enum solver{
-		LAPACK,
-		MAGMA,
-		MAGMAx2,
-		MAGMAx3,
-		MAGMAx4,
-		MAGMAx5,
-		MAGMAx6,
-		MAGMAx7,
-		MAGMAx8,
-		MAGMAx9,
-		MAGMAx10,
-	} LINEAR_SOLVER = MAGMA;
+		CPU,
+		GPU,
+		GPUx2,
+		GPUx3,
+		GPUx4,
+		GPUx5,
+		GPUx6,
+		GPUx7,
+		GPUx8,
+		GPUx9,
+		GPUx10,
+	} SOLVER = GPU;
 	
 	#include "mat_magma_functions.h"
 	#include "mat.h"

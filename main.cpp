@@ -182,8 +182,8 @@ int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
 
-	gmt::LINEAR_SOLVER = gmt::LAPACK;
-	//gmt::LINEAR_SOLVER = gmt::MAGMA;
+	gmt::SOLVER = gmt::CPU;
+	//gmt::SOLVER = gmt::GPU;
 	
 	//S_EigTest();
 	//D_EigTest();
@@ -192,10 +192,10 @@ int main(int argc, char **argv){
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();
-	magmaZmul();
+	//magmaZmul();
 	
-	//gmt::dmat A(2,2), V;
-	//gmt::zmat E;
+	//gmt::cmat A(2,2), V;
+	//gmt::cmat E;
 	//
 	//A(0,0) = 1;
 	//A(0,1) = 2;
