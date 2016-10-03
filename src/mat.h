@@ -68,7 +68,7 @@ public:
 	
 
 	/* ---------------------------------------------
-	--- Row(col) access ----------------------------
+	--- rows/cols/size access ----------------------
 	-----------------------------------------------*/
 	unsigned			cols		()		const	{return mat->_cols;}
 	unsigned			rows		()		const	{return mat->_rows;}
@@ -136,30 +136,22 @@ public:
 	///* - The entry of the gevd --------------------- */
 	///* - Which diagonalize symmetric matrix--------- */
 	///* --------------------------------------------- */
-	string				evd(smat & E, matrix & V) {
+	string				evd (smat & E, matrix & V) {
 		if (cols() != rows()) throw "Object is not a square matrix!";
 		E = smat(1,cols()).get();
 		V = matrix(cols(),cols()).get();
 	
 		string Status;
-		if( NGPU == 1){
-			magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		} else {
-			magma_evdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		}
+		magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		return Status;
 	}
-	string				evd(dmat & E, matrix & V) {
+	string				evd (dmat & E, matrix & V) {
 		if (cols() != rows()) throw "Object is not a square matrix!";
 		E = dmat(1,cols()).get();
 		V = matrix(cols(),cols()).get();
 	
 		string Status;
-		if( NGPU == 1){
-			magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		} else {
-			magma_evdm(NGPU,cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
-		}
+		magma_evd(cols(), mat->get_ptr(), E.get_ptr(), V.get_ptr(), Status);
 		return Status;
 	}
 	string				gevd(cmat & E, smat & VL) {
@@ -214,7 +206,7 @@ public:
 		VL	= zmat(cols(),cols());
 	
 		string Status;
-		cout<<magma_gevd(cols(), A.get_ptr(), E.get_ptr(), VL.get_ptr(), Status)<<endl;
+		magma_gevd(cols(), A.get_ptr(), E.get_ptr(), VL.get_ptr(), Status);
 		
 		return Status;
 	}

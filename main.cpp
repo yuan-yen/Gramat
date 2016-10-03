@@ -23,10 +23,6 @@ void S_EigTest() {
 	cout<<S<<endl;
 	cout<<E<<endl;
 	cout<<V<<endl;
-
-	gmt::smat D;
-	D= S*V;
-	cout<<D<<endl;
 }
 
 // Double matrix diagonalization example
@@ -63,7 +59,7 @@ void C_EigTest() {
 
 // Double complex matrix diagonalization example
 void Z_EigTest() {
-	gmt::zmat S(10,10),V;
+	gmt::zmat S(2,2),V;
 	gmt::dmat E;
 	S(0,0) = 1;
 	S(1,0) = 2+gmt::Im;
@@ -196,7 +192,18 @@ int main(int argc, char **argv){
 	//magmaDmul();
 	//magmaCmul();
 	//magmaZmul();
-
+	
+	//gmt::dmat A(2,2), V;
+	//gmt::zmat E;
+	//
+	//A(0,0) = 1;
+	//A(0,1) = 2;
+	//A(1,0) = 2;
+	//A(1,1) = 1;
+	//
+	//A.gevd(E,V);
+	//cout<<E<<endl;
+	//cout<<V<<endl;
 	
 	return 0;
 }

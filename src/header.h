@@ -22,6 +22,8 @@
 #include <cublas_v2.h>
 #include "magma.h"
 #include "magma_lapack.h"
+#include "magma_clapack.h"
+
 
 
 namespace gmt {
