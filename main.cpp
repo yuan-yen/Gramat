@@ -189,7 +189,7 @@ int main(int argc, char **argv){
 	//S_EigTest();
 	//D_EigTest();
 	//C_EigTest();
-	//Z_EigTest();
+	Z_EigTest();
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();
