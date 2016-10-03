@@ -152,7 +152,8 @@ const zvar Im(0,1);
 ///* ------------------------------------------------------- */
 cvar conj(cvar c){ return cvar(c.real(),-c.imag()); }
 zvar conj(zvar c){ return zvar(c.real(),-c.imag()); }
-	
+
+
 
 	
 	

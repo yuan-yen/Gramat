@@ -1,9 +1,201 @@
 
-// Single GPU operations
-//-----------------------------------
-//magma_ssyevd
-//------------------------------------
-float magma_evd(unsigned int N, float *A, float *w1, float *h_A, string &Status) {
+/*********************************************************************/
+
+double	magma_smul(unsigned M, unsigned K, unsigned N, float *a, float *b, float *c)							{
+	// Calling magma_sgemm
+
+	magma_int_t m = M;
+	magma_int_t k = K;
+	magma_int_t n = N;
+	
+
+	float alpha = MAGMA_S_MAKE(1.0, 0.0);
+	float beta	= MAGMA_S_MAKE(0.0, 0.0);
+
+	real_Double_t calc_time = magma_wtime();
+	
+	switch(LINEAR_SOLVER){
+		case LAPACK:
+			blasf77_sgemm("N", "N", &m, &n, &k, &alpha, a, &m, b, &k, &beta, c, &m);
+			break;
+		case MAGMA: case MAGMAx2: case MAGMAx3: case MAGMAx4: case MAGMAx5:
+		case MAGMAx6: case MAGMAx7: case MAGMAx8: case MAGMAx9: case MAGMAx10:
+			// device mem. for a, b, c
+			magma_init();
+			magma_int_t mk = m*k;
+			magma_int_t kn = k*n;
+			magma_int_t mn = m*n;
+			float	*d_a, *d_b, *d_c;
+			magma_smalloc( &d_a, mk );
+			magma_smalloc( &d_b, kn );
+			magma_smalloc( &d_c, mn );
+
+			// copy data from host to device
+			magma_ssetmatrix( m, k, a, m, d_a, m );
+			magma_ssetmatrix( k, n, b, k, d_b, k );
+			magma_ssetmatrix( m, n, c, m, d_c, m );
+
+			magma_sgemm(MagmaNoTrans,MagmaNoTrans,m,n,k,alpha,d_a,m,d_b,k, beta,d_c,m);
+
+			magma_sgetmatrix( m, n, d_c, m, c, m );
+
+			magma_free(d_a);
+			magma_free(d_b);
+			magma_free(d_c);
+			magma_finalize ();
+			break;
+	}
+	
+	calc_time = magma_wtime()-calc_time;
+	return calc_time;
+}
+double	magma_dmul(unsigned M, unsigned K, unsigned N, double *a, double *b, double *c)							{
+	// Calling magma_dgemm
+
+	magma_int_t m = M;
+	magma_int_t k = K;
+	magma_int_t n = N;
+	double	alpha	= MAGMA_D_MAKE(1.0, 0.0);
+	double	beta	= MAGMA_D_MAKE(0.0, 0.0);
+
+	real_Double_t calc_time = magma_wtime();
+	
+	switch(LINEAR_SOLVER){
+		case LAPACK:
+			blasf77_dgemm("N", "N", &m, &n, &k, &alpha, a, &m, b, &k, &beta, c, &m);
+			break;
+		case MAGMA: case MAGMAx2: case MAGMAx3: case MAGMAx4: case MAGMAx5:
+		case MAGMAx6: case MAGMAx7: case MAGMAx8: case MAGMAx9: case MAGMAx10:
+			// device mem. for a, b, c
+			magma_init();
+			magma_int_t mk = m*k;
+			magma_int_t kn = k*n;
+			magma_int_t mn = m*n;
+			double	*d_a, *d_b, *d_c;
+			magma_dmalloc( &d_a, mk );
+			magma_dmalloc( &d_b, kn );
+			magma_dmalloc( &d_c, mn );
+
+			// copy data from host to device
+			magma_dsetmatrix( m, k, a, m, d_a, m );
+			magma_dsetmatrix( k, n, b, k, d_b, k );
+			magma_dsetmatrix( m, n, c, m, d_c, m );
+
+			magma_dgemm(MagmaNoTrans,MagmaNoTrans,m,n,k,alpha,d_a,m,d_b,k, beta,d_c,m);
+
+			magma_dgetmatrix( m, n, d_c, m, c, m );
+
+			magma_free(d_a);
+			magma_free(d_b);
+			magma_free(d_c);
+			magma_finalize ();
+			break;
+	}
+	
+	calc_time = magma_wtime()-calc_time;
+	return calc_time;
+}
+double	magma_cmul(unsigned M, unsigned K, unsigned N, cuFloatComplex *a, cuFloatComplex *b, cuFloatComplex *c)	{
+	// Calling magma_cgemm
+
+	magma_int_t m = M;
+	magma_int_t k = K;
+	magma_int_t n = N;
+
+	cuFloatComplex 	alpha	= MAGMA_C_MAKE(1.0, 0.0);
+	cuFloatComplex	beta	= MAGMA_C_MAKE(0.0, 0.0);
+
+	real_Double_t calc_time = magma_wtime();
+	
+	switch(LINEAR_SOLVER){
+		case LAPACK:
+			blasf77_cgemm("N", "N", &m, &n, &k, &alpha, a, &m, b, &k, &beta, c, &m);
+			break;
+		case MAGMA: case MAGMAx2: case MAGMAx3: case MAGMAx4: case MAGMAx5:
+		case MAGMAx6: case MAGMAx7: case MAGMAx8: case MAGMAx9: case MAGMAx10:
+			// device mem. for a, b, c
+			magma_init();
+			magma_int_t mk = m*k;
+			magma_int_t kn = k*n;
+			magma_int_t mn = m*n;
+			cuFloatComplex	*d_a, *d_b, *d_c;
+			magma_cmalloc( &d_a, mk );
+			magma_cmalloc( &d_b, kn );
+			magma_cmalloc( &d_c, mn );
+
+			// copy data from host to device
+			magma_csetmatrix( m, k, a, m, d_a, m );
+			magma_csetmatrix( k, n, b, k, d_b, k );
+			magma_csetmatrix( m, n, c, m, d_c, m );
+
+			magma_cgemm(MagmaNoTrans,MagmaNoTrans,m,n,k,alpha,d_a,m,d_b,k, beta,d_c,m);
+
+			magma_cgetmatrix( m, n, d_c, m, c, m );
+
+			magma_free(d_a);
+			magma_free(d_b);
+			magma_free(d_c);
+			magma_finalize ();
+			break;
+	}
+
+	calc_time = calc_time-magma_wtime();
+	return calc_time;
+}
+double	magma_zmul(unsigned M, unsigned K, unsigned N, cuDoubleComplex *a, cuDoubleComplex *b, cuDoubleComplex *c){
+	// Calling magma_zgemm
+
+	magma_int_t m = M;
+	magma_int_t k = K;
+	magma_int_t n = N;
+
+	cuDoubleComplex 	alpha=MAGMA_Z_MAKE(1.0, 0.0);
+	cuDoubleComplex		beta= MAGMA_Z_MAKE(0.0, 0.0);
+
+	real_Double_t calc_time = magma_wtime();
+	
+	switch(LINEAR_SOLVER){
+		case LAPACK:
+			blasf77_zgemm("N", "N", &m, &n, &k, &alpha, a, &m, b, &k, &beta, c, &m);
+			break;
+		case MAGMA: case MAGMAx2: case MAGMAx3: case MAGMAx4: case MAGMAx5:
+		case MAGMAx6: case MAGMAx7: case MAGMAx8: case MAGMAx9: case MAGMAx10:
+			// device mem. for a, b, c
+			magma_init();
+			magma_int_t mk = m*k;
+			magma_int_t kn = k*n;
+			magma_int_t mn = m*n;
+			cuDoubleComplex	*d_a, *d_b, *d_c;
+			magma_zmalloc( &d_a, mk );
+			magma_zmalloc( &d_b, kn );
+			magma_zmalloc( &d_c, mn );
+
+			// copy data from host to device
+			magma_zsetmatrix( m, k, a, m, d_a, m );
+			magma_zsetmatrix( k, n, b, k, d_b, k );
+			magma_zsetmatrix( m, n, c, m, d_c, m );
+
+			magma_zgemm(MagmaNoTrans,MagmaNoTrans,m,n,k,alpha,d_a,m,d_b,k, beta,d_c,m);
+
+			magma_zgetmatrix( m, n, d_c, m, c, m );
+
+			magma_free(d_a);
+			magma_free(d_b);
+			magma_free(d_c);
+			magma_finalize ();
+			break;
+	}
+
+	calc_time = calc_time-magma_wtime();
+	return calc_time;
+}
+
+/*********************************************************************/
+
+double	magma_evd(unsigned N, float *A, float *w1, float *h_A, string &Status)								{
+	//-----------------------------------
+	//magma_ssyevd
+	//------------------------------------
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -47,11 +239,10 @@ float magma_evd(unsigned int N, float *A, float *w1, float *h_A, string &Status)
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_dsyevd
-//-----------------------------------
-float magma_evd(unsigned int N, double *A, double *w1, double *h_A, string &Status) {
+double	magma_evd(unsigned N, double *A, double *w1, double *h_A, string &Status)							{
+	//-----------------------------------
+	//magma_dsyevd
+	//-----------------------------------
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -94,11 +285,10 @@ float magma_evd(unsigned int N, double *A, double *w1, double *h_A, string &Stat
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_cheevd
-//-----------------------------------
-float magma_evd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status) {
+double	magma_evd(unsigned N, cuFloatComplex *A, float *w1, cuFloatComplex *h_A, string &Status)			{
+	//-----------------------------------
+	//magma_cheevd
+	//-----------------------------------
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -143,11 +333,10 @@ float magma_evd(unsigned int N, cuFloatComplex *A, float *w1, cuFloatComplex *h_
 	calc_time = magma_wtime() - calc_time;
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_zheevd
-//-----------------------------------
-float magma_evd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status) {
+double	magma_evd(unsigned N, cuDoubleComplex *A, double *w1, cuDoubleComplex *h_A, string &Status)			{
+	//-----------------------------------
+	//magma_zheevd
+	//-----------------------------------
 
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -193,14 +382,12 @@ float magma_evd(unsigned int N, cuDoubleComplex *A, double *w1, cuDoubleComplex 
 	return calc_time;
 }
 
-
 /*********************************************************************/
 
-
-//-----------------------------------
-//magma_sgeev
-//-----------------------------------
-float magma_gevd(unsigned int N, float *A, float *wr, float *wi, float *VR, string &Status)	{
+double	magma_gevd(unsigned N, float *A, float *wr, float *wi, float *VR, string &Status)					{
+	//-----------------------------------
+	//magma_sgeev
+	//-----------------------------------
 	
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -232,11 +419,10 @@ float magma_gevd(unsigned int N, float *A, float *wr, float *wi, float *VR, stri
 	
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_dgeev
-//-----------------------------------
-float magma_gevd(unsigned int N, double *A, double *wr, double *wi, double *VR, string &Status)	{
+double	magma_gevd(unsigned N, double *A, double *wr, double *wi, double *VR, string &Status)				{
+	//-----------------------------------
+	//magma_dgeev
+	//-----------------------------------
 	
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -268,11 +454,10 @@ float magma_gevd(unsigned int N, double *A, double *wr, double *wi, double *VR, 
 	
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_cgeev
-//-----------------------------------
-float magma_gevd(unsigned int N, cuFloatComplex *A, cuFloatComplex *w, cuFloatComplex *VR, string &Status)	{
+double	magma_gevd(unsigned N, cuFloatComplex *A, cuFloatComplex *w, cuFloatComplex *VR, string &Status)	{
+	//-----------------------------------
+	//magma_cgeev
+	//-----------------------------------
 	
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -309,11 +494,10 @@ float magma_gevd(unsigned int N, cuFloatComplex *A, cuFloatComplex *w, cuFloatCo
 	
 	return calc_time;
 }
-
-//-----------------------------------
-//magma_zgeev
-//-----------------------------------
-float magma_gevd(unsigned int N, cuDoubleComplex *A, cuDoubleComplex *w, cuDoubleComplex *VR, string &Status)	{
+double	magma_gevd(unsigned N, cuDoubleComplex *A, cuDoubleComplex *w, cuDoubleComplex *VR, string &Status)	{
+	//-----------------------------------
+	//magma_zgeev
+	//-----------------------------------
 	
 	// Start counting the calculation time
 	real_Double_t calc_time = magma_wtime();
@@ -348,12 +532,4 @@ float magma_gevd(unsigned int N, cuDoubleComplex *A, cuDoubleComplex *w, cuDoubl
 	
 	return calc_time;
 }
-
-
-
-
-
-
-
-
 

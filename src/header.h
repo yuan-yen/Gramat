@@ -24,8 +24,6 @@
 #include "magma_lapack.h"
 #include "magma_clapack.h"
 
-
-
 namespace gmt {
 	
 	using namespace std;
@@ -64,11 +62,44 @@ namespace gmt {
 	typedef matrix<cvar>	cmat;
 	typedef matrix<zvar>	zmat;
 	
-	#include "mat_magma_functions.h"
+	//--------------------------------------------------------------
+	//---Some math functions
+	//--------------------------------------------------------------
+	double					abs(cvar val)		{ return sqrt(val.real()*val.real()+val.imag()*val.imag()); }
+	double					abs(zvar val)		{ return sqrt(val.real()*val.real()+val.imag()*val.imag()); }
+	zvar					sqrt(zvar _X)		{
+		complex<double> X(_X.x,_X.y);
+		X=sqrt(X);
+		return zvar(X.real(),X.imag());
+	}
+	cvar					sqrt(cvar _X)		{
+		complex<float> X(_X.x,_X.y);
+		X=sqrt(X);
+		return cvar(X.real(),X.imag());
+	}
+	zvar					exp(zvar val)		{
+		zmplx vv(val.x,val.y);
+		vv=exp(vv);
+		return zvar(vv.real(), vv.imag());
+	}
 	
 	enum type{MATRIX, ARRAY};
-	//enum CPY_TYPE{VAR,PTR};
 	
+	enum solver{
+		LAPACK,
+		MAGMA,
+		MAGMAx2,
+		MAGMAx3,
+		MAGMAx4,
+		MAGMAx5,
+		MAGMAx6,
+		MAGMAx7,
+		MAGMAx8,
+		MAGMAx9,
+		MAGMAx10,
+	} LINEAR_SOLVER = MAGMA;
+	
+	#include "mat_magma_functions.h"
 	#include "mat.h"
 	
 }

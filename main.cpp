@@ -92,7 +92,7 @@ void magmaSmul() {
 	B(2,1)=1;
 
 
-	cout<<magma_smul(A,B,C)<<endl;
+	cout<<multiply(A,B,C)<<endl;
 	cout<<A<<endl;
 	cout<<B<<endl;
 	cout<<C<<endl;
@@ -117,7 +117,7 @@ void magmaDmul() {
 	B(2,1)=1;
 
 
-	cout<<magma_dmul(A,B,C)<<endl;
+	cout<<multiply(A,B,C)<<endl;
 
 	cout<<A<<endl;
 	cout<<B<<endl;
@@ -143,7 +143,7 @@ void magmaCmul() {
 	B(2,1)=1;
 
 
-	cout<<magma_cmul(A,B,C)<<endl;
+	cout<<multiply(A,B,C)<<endl;
 
 	cout<<A<<endl;
 	cout<<B<<endl;
@@ -169,7 +169,7 @@ void magmaZmul() {
 	B(2,1)=1;
 
 
-	cout<<magma_zmul(A,B,C)<<endl;
+	cout<<multiply(A,B,C)<<endl;
 
 	cout<<A<<endl;
 	cout<<B<<endl;
@@ -182,7 +182,8 @@ int main(int argc, char **argv){
 	
 	gmt::PRINT_PRECISION = 10;
 
-	
+	gmt::LINEAR_SOLVER = gmt::LAPACK;
+	//gmt::LINEAR_SOLVER = gmt::MAGMA;
 	
 	//S_EigTest();
 	//D_EigTest();
@@ -191,7 +192,7 @@ int main(int argc, char **argv){
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();
-	//magmaZmul();
+	magmaZmul();
 	
 	//gmt::dmat A(2,2), V;
 	//gmt::zmat E;
@@ -204,6 +205,7 @@ int main(int argc, char **argv){
 	//A.gevd(E,V);
 	//cout<<E<<endl;
 	//cout<<V<<endl;
+	
 	
 	return 0;
 }
