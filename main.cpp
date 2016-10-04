@@ -1,3 +1,18 @@
+/*-----------------------------------------------------------|
+| Copyright (C) 2016 Yuan-Yen Tai                            |
+|                                                            |
+| This file is distributed under the terms of the GNU        |
+| GENERAL PUBLIC LICENSE:                                    |
+|    https://www.gnu.org/licenses/gpl-3.0.en.html            |
+|                                                            |
+|-----------------------------------------------------------*/
+//
+//  GraMat
+//
+//  Created by Yuan-Yen Tai
+//
+
+
 #include <iostream>
 #include <vector>
 #include <unistd.h>
@@ -189,7 +204,7 @@ int main(int argc, char **argv){
 	//S_EigTest();
 	//D_EigTest();
 	//C_EigTest();
-	Z_EigTest();
+	//Z_EigTest();
 	//magmaSmul();
 	//magmaDmul();
 	//magmaCmul();

@@ -1,3 +1,16 @@
+/*-----------------------------------------------------------|
+| Copyright (C) 2016 Yuan-Yen Tai                            |
+|                                                            |
+| This file is distributed under the terms of the GNU        |
+| GENERAL PUBLIC LICENSE:                                    |
+|    https://www.gnu.org/licenses/gpl-3.0.en.html            |
+|                                                            |
+|-----------------------------------------------------------*/
+//
+//  GraMat
+//
+//  Created by Yuan-Yen Tai
+//
 
 template<class var>
 class matrix {
