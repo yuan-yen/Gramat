@@ -12,4 +12,5 @@ The source code of GraMat is written in header files and there is no need to pre
 2. The MAGMA library.
 
 After the successful compilation of MAGMA library, one can use GraMat by including the library path in the compile flag: 
+
 `-I/[path to gramat folder]/include`.
