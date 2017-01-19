@@ -63,7 +63,7 @@ string fformat(unsigned	val,size_t len=10){
 /* ------------------------------------------------------- */
 string fformat(float	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
-	ss <<std::setprecision(8)<< val;
+	ss <<std::fixed<<std::setprecision(8)<< val;
 	string str;
 	if (val >= 0)	str = " "+ss.str();
 	else			str = ss.str();
@@ -78,7 +78,7 @@ string fformat(float	val,size_t len=10){
 /* ------------------------------------------------------- */
 string fformat(double	val,size_t len=10){
 	stringstream ss(stringstream::in | stringstream::out);
-	ss <<std::setprecision(8)<< val;
+	ss <<std::fixed<<std::setprecision(8)<< val;
 	string str;
 	if (val >= 0)	str = " "+ss.str();
 	else			str = ss.str();

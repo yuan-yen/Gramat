@@ -433,8 +433,8 @@ template<class var>				ostream & operator<< (ostream & out, matrix<var> & m)		{
 			
 			out<<fformat(m(i,j), max_len+1);
 			
-			if (i==m.cols()-1 and j==m.rows()-1) out<<"]]";
-			else if (j==m.rows()-1) out<<"] ";
+			if (i==m.cols()-1 and j==m.rows()-1) out<<" ]]";
+			else if (j==m.rows()-1) out<<" ] ";
 		}
 	}
 	return out;
